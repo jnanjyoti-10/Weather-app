@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modern Weather App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-400 to-indigo-600 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md text-center">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">🌤 Weather App</h1>
+
+    <div class="flex gap-2 mb-4">
+      <input type="text" id="cityInput" placeholder="Enter city name"
+        class="flex-grow px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400">
+      <button onclick="getWeather()"
+        class="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition">Search</button>
+    </div>
+
+    <div id="weatherResult" class="mt-6 text-gray-700 transition-all duration-300">
+      <!-- Weather result will show here -->
+    </div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const city = document.getElementById('cityInput').value.trim();
+      const apiKey = '464e4e14bbe7722006e9a1e1223cd816';
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+      const resultDiv = document.getElementById('weatherResult');
+      resultDiv.innerHTML = `<p class="text-sm text-gray-500">Fetching weather...</p>`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.cod === 200) {
+          const icon = data.weather[0].icon;
+          const weatherHTML = `
+            <div class="flex flex-col items-center">
+              <img src="https://openweathermap.org/img/wn/${icon}@4x.png" alt="${data.weather[0].description}">
+              <h2 class="text-2xl font-semibold">${data.name}</h2>
+              <p class="text-xl">${data.main.temp}°C</p>
+              <p class="capitalize text-gray-600">${data.weather[0].description}</p>
+            </div>
+          `;
+          resultDiv.innerHTML = weatherHTML;
+        } else {
+          resultDiv.innerHTML = `<p class="text-red-500">City not found!</p>`;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<p class="text-red-500">Error fetching data.</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
